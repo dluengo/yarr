@@ -30,8 +30,9 @@
 void init_hideproc(void);
 
 /***
- * Liberate resources taken during the living of yarr inside the kernel. This
- * function should be called just during yarr unload.
+ * Liberate resources taken during the living of yarr inside the kernel (just
+ * hide process related). This function should be called just during yarr
+ * unload.
  */
 void exit_hideproc(void);
 
@@ -52,7 +53,7 @@ int hideProc(pid_t pid);
 int stopHideProc(pid_t pid);
 
 /***
- * Tells whether a process is being (should be) hidden or not.
+ * Tells whether a process is being (should be) hide or not.
  *
  * @pid: The PID of the process to check for.
  * @return: Zero if the process is not being hidden or non-zero elsewhere.
