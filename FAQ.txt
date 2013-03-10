@@ -1,0 +1,30 @@
+Q: How can I resolve any doubt I have about YARR?
+A: Ask me at olelen <at> gmail <dot> com.
+
+Q: In which kernels have you tested YARR?
+A: Right now the one I use to develop, 2.6.35 series.
+
+Q: How I compile YARR?
+A: First of all this is a LKM (Linux Kernel Module) so you need gcc, linux
+   headers (or sources) and make utilities. Then just go to src/ folder and
+   type "make". That should be enough but I'm aware that changing the system
+   can cause problems. As an example, when you compile in Debian there are no
+   problems, but if you tried the same on Ubuntu (with build-essential and all
+   that stuff, of course) you will get problems with asmlinkage because there
+   aren't included some headers files (linux/linkage.h if i remember) in some
+   YARR files. If you get some nasty errors that don't know from where they
+   come let it me know, I will try to help and solve those problems.
+
+Q: How I use YARR?
+A: You have to load it into the kernel (insmod, modprobe) and then you can
+   communicate with it through its system call (yarrcall) or through its IRQ
+   (yarrIntrDesc). I'm sorry but right now I don't have an easy way to do
+   things. You have to program your own utilities to use YARR, and program
+   them could be painfully (specially if you try to use the IRQ). Even though
+   I have programmed some snippets that could help you to do so, they are at
+   the tests/ folder. Again, if you have doubts contact me.
+
+Q: Why did you start YARR?
+A: Because programming is awesome and I also want to study the Linux kernel
+   in-depth, and programming a rootkit let me do both things :). So it is just
+   for fun.

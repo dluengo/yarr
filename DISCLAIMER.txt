@@ -1,0 +1,4 @@
+BEWARE OF THE SCRIPT KIDDIE!
+
+We don't get responsible of the use that people could give to these utilities. We
+make this just for fun and to learn about Linux internals.
