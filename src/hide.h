@@ -27,4 +27,4 @@
  */
 int hideYARR(void);
 
-#endif /* __YARR_WE_HIDE_AS_WELL_AS_NINJAS_BUT_WE_ARE_STILL_PIRATES. */
+#endif /* __YARR_WE_HIDE_AS_NINJAS_BUT_WE_ARE_STILL_PIRATES. */

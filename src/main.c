@@ -160,7 +160,7 @@ static int __init yarr_loader(void) {
 
 	// Hook the system calls (right now patching system_call() the handler of
 	// IRQ 0x80).
-	hook_syscalls(PATCH_SYSTEM_CALL);
+//	hook_syscalls(PATCH_SYSTEM_CALL);
 
 	// Install yarrIntrDesc().
 //	init_interrupt();

