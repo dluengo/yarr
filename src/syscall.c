@@ -64,8 +64,8 @@ unsigned long **getSyscallTable(void) {
 	u8 *syscall_desc, *call_offset;
 
 	// Get both IDT and GDT.
-	native_store_idt(&idtr);
-	native_store_gdt(&gdtr);
+	store_idt(&idtr);
+	store_gdt(&gdtr);
 
 	// Take the interrupt descriptor for 0x80 (Linux system_call).
 	idt_entry = (struct desc_struct *)idtr.address + LINUX_SYSCALL_VECTOR;
@@ -94,8 +94,8 @@ int getSyscallTableSize(void) {
     u8 *syscall_desc, *cmpl_offset;
 
     // Get both IDT and GDT.
-    native_store_idt(&idtr);
-    native_store_gdt(&gdtr);
+    store_idt(&idtr);
+    store_gdt(&gdtr);
 
     // Take the interrupt descriptor for 0x80 (Linux system_call).
     idt_entry = (struct desc_struct *)idtr.address + LINUX_SYSCALL_VECTOR;

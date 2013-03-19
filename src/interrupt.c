@@ -34,7 +34,7 @@ static IntrStats intr_stats;
 struct desc_struct *getIDTEntry(int n) {
     struct desc_ptr idtr;
 
-    native_store_idt(&idtr);
+    store_idt(&idtr);
 
     // Check that we have been asked for a real entry.
     if ((n < 0) || (n >= (idtr.size+1)/8))
@@ -45,7 +45,7 @@ struct desc_struct *getIDTEntry(int n) {
 struct desc_struct *getGDTEntry(int n) {
     struct desc_ptr gdtr;
 
-    native_store_gdt(&gdtr);
+    store_gdt(&gdtr);
 
     // Check that we have been asked for a real entry.
     if ((n < 0) || (n >= (gdtr.size+1)))
@@ -60,8 +60,8 @@ unsigned long *getIntrDesc(int n) {
     unsigned long *gate_desc;
 
     // Get both IDT and GDT.
-    native_store_idt(&idtr);
-    native_store_gdt(&gdtr);
+    store_idt(&idtr);
+    store_gdt(&gdtr);
 
     // Get the nth IDT entry.
     idt_entry = getIDTEntry(n);
@@ -105,9 +105,9 @@ void setGate(unsigned int n, unsigned long addr) {
 			  ((0x80 | (RING3 << 5) | GATE_TRAP) << 8) |
 			  0x00;
 
-	native_store_idt(&idtr);
+	store_idt(&idtr);
 	idt = (gate_desc *)idtr.address;
-	native_write_idt_entry(idt, n, &entry);
+	write_idt_entry(idt, n, &entry);
 }
 
 // TODO: We should study how the kernel reserves IRQ and how modules must

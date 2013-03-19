@@ -74,7 +74,7 @@ void printIDTEntryByIndex(unsigned int n) {
 		return;
 	}
 
-	native_store_idt(&idtr);
+	store_idt(&idtr);
 	entry = ((gate_desc *)idtr.address) + n;
 	debug("--- IDT entry %d ---\n", n);
 	printIDTEntry(entry);
@@ -91,7 +91,7 @@ void printGDTEntryByIndex(unsigned int n) {
 		return;
 	}
 
-	native_store_gdt(&gdtr);
+	store_gdt(&gdtr);
 	entry = ((gate_desc *)gdtr.address) + n;
 	debug("--- GDT entry %d ---\n", n);
 	printIDTEntry(entry);
@@ -101,7 +101,7 @@ void printGDTEntryByIndex(unsigned int n) {
 void printIDTR() {
 	struct desc_ptr idtr;
 
-	native_store_idt(&idtr);
+	store_idt(&idtr);
 	debug("size    : %hd\n", idtr.size);
 	debug("address : 0x%lx\n", idtr.address);
 	return;
@@ -110,7 +110,7 @@ void printIDTR() {
 void printGDTR() {
 	struct desc_ptr gdtr;
 
-	native_store_gdt(&gdtr);
+	store_gdt(&gdtr);
 	debug("size    : %hd\n", gdtr.size);
 	debug("address : 0x%lx\n", gdtr.address);
 	return;
@@ -120,7 +120,7 @@ void printIDT() {
 	struct desc_ptr idtr;
 	int i;
 
-	native_store_idt(&idtr);
+	store_idt(&idtr);
 	for (i=0; i<(idtr.size+1)/8; i++)
 		printIDTEntryByIndex(i);
 	return;
@@ -130,7 +130,7 @@ void printGDT() {
 	struct desc_ptr gdtr;
 	int i;
 
-	native_store_gdt(&gdtr);
+	store_gdt(&gdtr);
 	for (i=0; i<(gdtr.size+1)/8; i++)
 		printGDTEntryByIndex(i);
 	return;
