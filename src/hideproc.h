@@ -17,11 +17,10 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef __YARR_I_LOVE_MONITORING_RESOURCES
-#define __YARR_I_LOVE_MONITORING_RESOURCES
+#ifndef __YARR_NINJA_TASKS
+#define __YARR_NINJA_TASKS
 
-typedef struct {
-	unsigned long calls_count;
-} IntrStats;
 
-#endif /* __YARR_I_LOVE_MONITORING_RESOURCES. */
+
+#endif /* __YARR_NINJA_TASKS */
+

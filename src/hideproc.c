@@ -17,8 +17,6 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef __YARR_WE_TUNE_OUR_GALEON_AS_WE_WANT
-#define __YARR_WE_TUNE_OUR_GALEON_AS_WE_WANT
+#include "hideproc.h"
 
 
-#endif /* __YARR_WE_TUNE_OUR_GALEON_AS_WE_WANT. */
