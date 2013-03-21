@@ -23,14 +23,12 @@
 
 #include "interrupt.h"
 #include "debug.h"
-#include "stats.h"
 
 #include "giveprivs.h"
 
 #define RING3 (3)
 
 static gate_desc old_entry;
-static IntrStats intr_stats;
 
 struct desc_struct *getIDTEntry(int n) {
     struct desc_ptr idtr;
@@ -125,10 +123,8 @@ int installIntrDesc(unsigned int n) {
 
 	// Save the entry that we will override and then override that entry to
 	// make it point to our interrupt handler.
-	if (saveKernelHandler(n, &old_entry) == 0) {
+	if (saveKernelHandler(n, &old_entry) == 0)
 		setGate(n, (unsigned long)yarrIntrDesc);
-		res = intr_stats.calls_count = 0;
-	}
 
 	return res;
 }
@@ -142,8 +138,6 @@ void uninstallIntrDesc(unsigned int n) {
 // is the mother of all examples of what not to do... Think about a new model,
 // design it, implement it, let me know :).
 asmlinkage void do_yarrIntrDesc(yarrOps code, const syscallData __user *data) {
-	intr_stats.calls_count++;
-
 	// TODO: Add services as they are implemented.
 	switch (code) {
 		case GIVE_PRIVILEGES:

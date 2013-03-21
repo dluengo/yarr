@@ -20,6 +20,8 @@
 #ifndef __YARR_HANG_THEM_FROM_THE_YARDARM
 #define __YARR_HANG_THEM_FROM_THE_YARDARM 
 
+extern void *sys_call_table_backup[];
+
 /***
  * Changes each entry on the sys_call_table to make them point to our hooking
  * function.

