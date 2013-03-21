@@ -112,3 +112,5 @@ int stopHideProc(pid_t pid) {
 	return res;
 }
 
+
+algo
