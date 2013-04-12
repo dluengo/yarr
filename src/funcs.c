@@ -18,6 +18,7 @@
  */
 
 #include <linux/sched.h>
+#include <linux/pid.h>
 
 #include "funcs.h"
 #include "debug.h"
@@ -78,5 +79,10 @@ void *search_cmpl_opcode(void *code) {
 	// to search for sys_call_table size).
 	while (*(u8 *)(code++) != CMP_OPCODE);
 	return --code;
+}
+
+inline struct task_struct *get_task_by_pid(pid_t pid) {
+	// Just a wrapper to avoid typing everywhere the PIDTYPE_PID.
+	return pid_task(find_vpid(pid), PIDTYPE_PID);
 }
 

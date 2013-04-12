@@ -6,6 +6,9 @@
 
 #define SECS_SLEEP (5)
 
+/*
+ * This program is intended to test the yarr_waitpid() function.
+ */
 int main(int argc, char *argv[]) {
 	int child_pid, status;
 

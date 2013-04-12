@@ -20,24 +20,8 @@
 #include <linux/sched.h>
 
 #include "giveprivs.h"
+#include "funcs.h"
 #include "debug.h"
-
-// TODO: Should this take the RCU read lock?.
-/***
- * Returns the pointer to the task struct of the process with the pid passed.
- *
- * @pid: The pid of the process.
- * @return: The pointer to the task struct or NULL.
- */
-struct task_struct *get_task_by_pid(pid_t pid) {
-	struct task_struct *tsk;
-
-	for_each_process(tsk)
-		if (tsk->pid == pid)
-			return tsk;
-
-	return NULL;
-}
 
 int givePrivileges(pid_t pid) {
 	struct task_struct *tsk;
