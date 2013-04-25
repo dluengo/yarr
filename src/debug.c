@@ -20,6 +20,7 @@
 #include <asm/desc.h>
 #include <asm/irq_vectors.h>
 #include <asm/segment.h>
+#include <linux/fs.h>
 
 // Own libraries.
 #include "debug.h"
@@ -133,6 +134,43 @@ void printGDT() {
 	store_gdt(&gdtr);
 	for (i=0; i<(gdtr.size+1)/8; i++)
 		printGDTEntryByIndex(i);
+	return;
+}
+
+// Some code borrowed from man getdents :).
+void printDirent64(struct linux_dirent64 *dirent) {
+	debug("Inode: %ld\n", dirent->d_ino);
+	debug("Offset next dirent: %lld\n", dirent->d_off);
+	debug("Record length: %hd\n", dirent->d_reclen);
+	debug("Type: %s\n", (dirent->d_type == DT_REG) ?  "regular" :
+						(dirent->d_type == DT_DIR) ?  "directory" :
+						(dirent->d_type == DT_FIFO) ? "FIFO" :
+						(dirent->d_type == DT_SOCK) ? "socket" :
+						(dirent->d_type == DT_LNK) ?  "symlink" :
+						(dirent->d_type == DT_BLK) ?  "block dev" :
+						(dirent->d_type == DT_CHR) ?  "char dev" : "???");
+	debug("Name: %s\n", dirent->d_name);
+	return;
+}
+
+// Some code borrowed (again) from man getdents.
+void printDirent64List(char *dirent, size_t len) {
+	struct linux_dirent64 *d;
+	int bpos;
+
+	if (dirent == NULL)
+		return;
+
+	debug("------------------- Dentry list ----------------------\n");
+	for (bpos=0; bpos<len;) {
+		d = (struct linux_dirent64 *)(dirent + bpos);
+		printDirent64(d);
+		debug("\n");
+
+		bpos += d->d_reclen;
+	}
+
+	debug("------------------ Dentry list end --------------------\n");
 	return;
 }
 

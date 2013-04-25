@@ -195,3 +195,17 @@ int isFileHidden(const char __user *filename) {
 	return res;
 }
 
+// TODO: In fact this function shouldn't exist or at least check mnt_id too.
+int isInodeHidden(long inode) {
+	struct hide_file *curr;
+	struct list_head *pos;
+
+	list_for_each(pos, &hide_files_list.list) {
+		curr = list_entry(pos, struct hide_file, list);
+		if (curr->i_ino == inode)
+			return 1;
+	}
+
+	return 0;
+}
+

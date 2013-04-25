@@ -21,6 +21,7 @@
 #define __YARR_IM_A_MIGHTY_DEBUGGER
 
 #include <asm/desc.h>
+#include <linux/dirent.h>
 
 /***
  * A wrapper for vprintk (the real internal print kernel function) that will
@@ -72,5 +73,19 @@ void printIDT(void);
  * Prints each entry on GDT with the format of printGDTEntry().
  */
 void printGDT(void);
+
+/***
+ * Prints a dirent.
+ */
+void printDirent64(struct linux_dirent64 *dirent);
+
+/***
+ * Prints a list of dirents. NOTE: You can ask, why the fuck this guy used a
+ * char * instead a struct linux_dirent64 *? Point for you, that's what I
+ * wanted, then I got plenty of kernel panics and the first idea was to code
+ * this as similar as man getdents example as possible. Lazyness... But it
+ * worked! :D.
+ */
+void printDirent64List(char *dirent, unsigned intlen);
 
 #endif /* __YARR_IM_A_MIGHTY_DEBUGGER */

