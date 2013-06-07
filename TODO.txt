@@ -6,23 +6,27 @@ About the interface to talk to yarr from userspace:
 [ ] The function do_yarrIntrDesc() must be rewritten, check commentaries.
 
 About functionality:
-[ ] Make possible ask yarr for hide a process.
+[X] Make possible ask yarr for hide a process.
 [ ] Make possible ask yarr for log every keystroke (keylogger).
 [ ] Make possible ask yarr for hide a port/connection.
-[ ] Make possible ask yarr for hide a file (this also includes devices of course, but network interfaces should be threated with care since they aren't files).
+[X] Make possible ask yarr for hide a file (this also includes devices of course, but network interfaces should be threated with care since they aren't files).
 [ ] Implement module configuration through a file (using flex and bison :).
 [ ] Make possible ask yarr for hide users and user connections.
 [ ] Make yarr loadable even in kernels with no support for modules.
 [X] Make possible ask yarr to give root privileges to a task.
+[ ] Make possible ask yarr to "see" a user's terminal.
 
 About invisibility:
+[ ] Read The Rootkit Arsenal 2nd edition (I'm on it).
 [X] Make module invisible to lsmod (remove it from the modules list of the kernel).
-[ ] Don't let the kernel export any symbol (variables, functions, whatever), if so yarr can be detected by looking at /proc/kallsyms.
+[ ] Don't let the kernel export any symbol (variables, functions, whatever), if so yarr can be detected by looking at /proc/kallsyms. EXPORT_NO_SYMBOLS no more valid, we should study how the kernel searchs for a symbol and erase them from wherever they are.
 [ ] Create a fake_sys_call_table and don't substitute functions on each sys_call_table entry but change the call sys_call_table(,eax,4)
 on instruction for call new_sys_call_table(,eax,4), so there is no inconsistency on sys_call_table, but on syscall_call.
 [ ] Create a technique to don't let anyone see the value of syscall_call, if they try then fail or return what you want to show.
 [ ] For this last technique it should be implemented a method to tell yarr not to show what is in address until +offset, but remember it
-and show what i remember.
+and show it on requests (really really complex).
+[ ] Anti PID bruteforcing technic (a first approach could be David Reguera's idea, change pids of hidden tasks during sys_fork, sys_clone).
+[ ] A way to detect yarr could be inserting a new module in the kernel that checks the address of syscall_call, sys_call_table and so on, do something so this cannot be done.
 
 About stability:
 [ ] Make module unloadable even if it not inside kernel's modules list.
@@ -30,7 +34,9 @@ About stability:
 [X] Release interrupt descriptor when exiting.
 [X] Release system call when exiting.
 [ ] When taking an IRQ search for a free one, and tell the kernel that it is taken.
-[ ] When yarr is loaded and then unloaded, if you execute a test program the kernel will crash :).
+[X] When yarr is loaded and then unloaded, if you execute a test program the kernel will crash :).
+[ ] Lots (I mean LOTS) of bugs while running on a physical machine with the yarrcalls. Hard to debug but this should be prioritary.
+[ ] I think there are lots of concurrency problems (lists usages for example). A whole rewrite should be done in order to give yarr concurrency safeness.
 
 About testing:
 [ ] Develop the tests (PoC).
@@ -40,9 +46,9 @@ About testing:
 
 About portability:
 [ ] Yarr is a x86 32 bits architecture rootkit, it would be awesome to make it more portable, but this is quite hard and needs planification and reestructuration of the folders (make it like Linux, hardware-dependant code under arch/<architecture>/).
-[ ] Make yarr as kernel-independant as possible, right now it is being developed under 2.6.32.x kernel series.
+[ ] Making yarr work on Android devices would be awesome.
 
 Other stuff:
 [X] Clear those nasty warnings at compile time that claim about not declaring prototypes or stuff like that.
-[ ] Understand why if syscall.h is included on other source file there is a compilation error.
 [ ] Clean includes that aren't being used.
+[ ] Refactorize what can be refactorized.

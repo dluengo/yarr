@@ -142,12 +142,9 @@ int isFileHidden(const char __user *filename) {
 	struct dentry *parent;
 	int i;
 
-	// Get the path of this filename.
-	if (user_path(filename, &path) != 0) {
-		// debug("isFileHidden: Weird error with user_path(%s, path).\n",
-		//	  filename);
+	// Get the path of this filename. Don't follow symlinks.
+	if (user_lpath(filename, &path) != 0)
 		return res;
-	}
 
 	// Get the properties we are interested in (check struct hide_file).
 	file_mnt_id = path.mnt->mnt_id;
@@ -189,9 +186,9 @@ int isFileHidden(const char __user *filename) {
 	// in the future.
 	// Even a file being hidden is revealed if one of these conditions meet:
 	// - Root is looking for it (root privileges in fact).
-	if (current->cred->euid == 0)
+	/*if (current->cred->euid == 0)
 		res = 0;
-
+*/
 	return res;
 }
 

