@@ -52,6 +52,7 @@ int hideYARR() {
 	return res;
 }
 
+// TODO: This is not implemented yet as you can see.
 int unloadMe() {
 /*	struct module *yarr_module;*/
 	int res = 0;
