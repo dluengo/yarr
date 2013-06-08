@@ -8,10 +8,10 @@ About the interface to talk to yarr from userspace:
 About functionality:
 [X] Make possible ask yarr for hide a process.
 [ ] Make possible ask yarr for log every keystroke (keylogger).
-[ ] Make possible ask yarr for hide a port/connection.
+[ ] Make possible ask yarr for hide a connection.
 [X] Make possible ask yarr for hide a file (this also includes devices of course, but network interfaces should be threated with care since they aren't files).
 [ ] Implement module configuration through a file (using flex and bison :).
-[ ] Make possible ask yarr for hide users and user connections.
+[ ] Make possible ask yarr to hide users, that means everything related to a user (files, tasks, connections, whatever).
 [ ] Make yarr loadable even in kernels with no support for modules.
 [X] Make possible ask yarr to give root privileges to a task.
 [ ] Make possible ask yarr to "see" a user's terminal.
@@ -19,7 +19,7 @@ About functionality:
 About invisibility:
 [ ] Read The Rootkit Arsenal 2nd edition (I'm on it).
 [X] Make module invisible to lsmod (remove it from the modules list of the kernel).
-[ ] Don't let the kernel export any symbol (variables, functions, whatever), if so yarr can be detected by looking at /proc/kallsyms. EXPORT_NO_SYMBOLS no more valid, we should study how the kernel searchs for a symbol and erase them from wherever they are.
+[X] Don't let the kernel export any symbol (variables, functions, whatever), if so yarr can be detected by looking at /proc/kallsyms. EXPORT_NO_SYMBOLS no more valid, we should study how the kernel searchs for a symbol and erase them from wherever they are. Just removing the module from the modules list will make the symbols disappear.
 [ ] Create a fake_sys_call_table and don't substitute functions on each sys_call_table entry but change the call sys_call_table(,eax,4)
 on instruction for call new_sys_call_table(,eax,4), so there is no inconsistency on sys_call_table, but on syscall_call.
 [ ] Create a technique to don't let anyone see the value of syscall_call, if they try then fail or return what you want to show.
@@ -40,7 +40,7 @@ About stability:
 
 About testing:
 [ ] Develop the tests (PoC).
-[ ] Check that we aren't exporting symbols.
+[X] Check that we aren't exporting symbols.
 [X] Make the interrupt descriptor work. Take a look to interrupt descriptors implemented by the kernel, try to implement the prologs and epilogs.
 [X] Test yarr compilation under 3.x.x kernel series.
 

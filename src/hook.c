@@ -40,8 +40,10 @@ int hookEachSyscall() {
 
 	// TODO: What about concurrency? Should this code be a critical region?.
 
+	debug("Hooking each syscall...\n");
+
 	// Substitute the syscalls with our syscalls. Also save the original
-	// pointers so this can be undo when unloading yarr.
+	// pointers so this can be undone when unloading yarr.
 	real_sys_call_table = getSyscallTable();
 	for (i=0; i<NR_syscalls; i++) {
 		sys_call_table_backup[i] = real_sys_call_table[i];
@@ -62,21 +64,30 @@ int patchSystemCall() {
 	void *call_instr;
 	int i, res = -1;
 
+	debug("Patching system_call to point to a fake table...\n");
+
 	// Initializes our sys_call_table.
 	real_sys_call_table = getSyscallTable();
 	debug("real_sys_call_table is at %p\n", real_sys_call_table);
 	for (i=0; i<NR_syscalls; i++)
 		fake_sys_call_table[i] = real_sys_call_table[i];
 
-	// TODO: Here we should hook syscalls.
+	// Sets our hooks in our fake table. The real syscall table remains
+	// untouched.
+	for (i=0; i<NR_syscalls; i++) {
+		sys_call_table_backup[i] = real_sys_call_table[i];
+		if (syscalls_hooks[i] != NULL) {
+			debug("Changing syscall at %d from %p to %p.\n", i,
+				  fake_sys_call_table[i], syscalls_hooks[i]);
+			kmemcpy(&(fake_sys_call_table[i]), &(syscalls_hooks[i]),
+					sizeof(void *));
+		}
+	}
 
 	// Patch system_call().
 	system_call = getIntrDesc(LINUX_SYSCALL_VECTOR);
-	debug("system_call is at %p\n", system_call);
 	call_instr = search_call_opcode(system_call);
-	debug("call_instr is at %p\n", call_instr);
 	fake_sct_addr = (unsigned long *)fake_sys_call_table;
-	debug("fake_sct_addr is at %p\n", fake_sct_addr);
 	kmemcpy(call_instr+3, &fake_sct_addr, sizeof(unsigned long **));
 	return res;
 }

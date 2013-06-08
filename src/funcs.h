@@ -76,17 +76,5 @@ void *search_cmpl_opcode(void *code);
  */
 struct task_struct *get_task_by_pid(pid_t pid);
 
-// TODO: This is were I'm developing right now, it returns 0 on error but I
-// feel like there could be a file with inode number 0, so in this case we
-// have a problem... don't try to hide the file with inode 0 please :). Not
-// for now.
-/**
- * Searchs the inode of a file by its name.
- *
- * @name: The name of the file to search its inode number.
- * @return: The inode number of the file or 0 if there were errors.
- */
-unsigned long get_inode_from_name(const char __user *name);
-
 #endif /* __YARR_WE_NEED_SOME_USEFUL_FUNCTIONS. */
 

