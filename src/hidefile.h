@@ -20,13 +20,6 @@
 #ifndef __YARR_NINJA_FILES
 #define __YARR_NINJA_FILES
 
-
-
-
-void print_hide_files(void);
-
-
-
 /***
  * Initializes everything related with hidding files. This function must be
  * called BEFORE using any other function specified here. Elsewhere behaviour

